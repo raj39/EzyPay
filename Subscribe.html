@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<br/>
+<br/>
+	<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Create A Subscription</h2>
+
+  <label>Subsciption Type:</label><br>
+  <select name="substype" id="substype">
+    <option value="WEEKLY">WEEKLY</option>
+    <option value="DAILY">DAILY</option>
+    <option value="MONTHLY">MONTHLY</option>
+  </select><br>
+  <label>Amount:</label><br>
+  <input type="number" step="0.01" id="amount" name="amount"><br>
+  <label>Bill Day/Date:</label><br>
+  <input type="text" id="bill" name="bill"><br>
+  <label>Start Date:</label><br>
+  <input type="date" id="start" name="start">
+  <input type="submit"><br>
+  <label>End Date:</label><br>
+  <input type="date" placeholder="dd/mm/yyyy" id="end" name="end">
+  <input type="submit"><br><br>
+
+  <button type="button" onclick="loadDoc()">Create</button>
+<br><br>
+  <p id="Amount"></p><br>
+  <p id="SubscriptionType"></p><br>
+  <p id="InvoiceDates"></p>
+
+</body>
+<script>
+function loadDoc() {
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.status == 200) {
+		var jsonResponse = JSON.parse(xhttp.responseText);
+		if (jsonResponse['Code'] == 200) {
+			document.getElementById("Amount").innerHTML = 'Amount : ' + jsonResponse['Amount'];
+			document.getElementById("SubscriptionType").innerHTML = 'Subsciption Type : ' + jsonResponse['SubscriptionType'];
+			document.getElementById("InvoiceDates").innerHTML = 'Invoice dates : ' + jsonResponse['InvoiceDates'];
+		} else {
+			document.getElementById("Amount").innerHTML = jsonResponse['Status'];
+			document.getElementById("SubscriptionType").innerHTML = '';
+			document.getElementById("InvoiceDates").innerHTML = '';
+		}
+    } else {
+		document.getElementById("Amount").innerHTML = "Bad Request";
+	}
+  };
+  xhttp.open("POST", "http://localhost:8080/api/ezypay/subscribe", true);
+  xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  if (document.getElementById("substype").value=='DAILY'){
+	xhttp.send(JSON.stringify({ "SubscriptionType":document.getElementById("substype").value, "Amount":document.getElementById("amount").value, "StartDate":document.getElementById("start").value, "EndDate":document.getElementById("end").value}));
+  } else {
+	xhttp.send(JSON.stringify({ "SubscriptionType":document.getElementById("substype").value, "Amount":document.getElementById("amount").value, "StartDate":document.getElementById("start").value, "EndDate":document.getElementById("end").value, "BillDay":document.getElementById("bill").value}));
+  }
+}
+</script>
+</html>
+
+</html>
